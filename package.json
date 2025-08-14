@@ -15,13 +15,10 @@
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "scripts": {
-      "build" : "tsc",
-      "start": "node dist/server.js",
-      "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
-      "list": "eslint 'src/**/*.ts"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "list": "eslint 'src/**/*.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
@@ -33,5 +30,8 @@
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "sqlite": "^5.1.1"
   }
 }

@@ -6,8 +6,13 @@ const app = express()
 app.use(express.json())
 
 app.get( '/', (req: Request, res: Response) => {
-    console.log('hello express world')
-    res.status(200).json({"message" : "hello from express"})
+    res.status(200).json({"message" : "access /identify"})
+})
+
+app.get( '/identify', (req: Request, res: Response) => {
+    let {phone, email} = req.body
+    console.log(phone, email)
+    res.status(200).json(req.body)
 })
 
 export default app
