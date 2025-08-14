@@ -1,9 +1,11 @@
 import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
+import { open, Database } from 'sqlite'
 import path from 'path'
 
+let db: Database
+
 export const initDB = async () => {
-    const db = await open({
+    db = await open({
         'filename': path.resolve(__dirname, '../../data/orders.db'),
         'driver': sqlite3.Database
     })
@@ -19,4 +21,12 @@ export const initDB = async () => {
                         deletedAT DATETIME, 
                         FOREIGN KEY (linkedId) REFERENCES orders(id));
     `)
+}
+
+export const identify = async (phoneNumber: string, email: string) => {
+    if (!db) {
+        throw new Error('Database not initialized');
+    }
+
+    return db.all('SELECT * FROM orders')
 }

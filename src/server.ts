@@ -6,6 +6,8 @@ import path from 'path'
 let port: number = 3000
 const dataDir = path.resolve(__dirname, '../data');
 
+let db: Awaited<ReturnType<typeof initDB>>
+
 // TODO: get port from config/env variables
 app.listen(port, async () => {
 
@@ -16,7 +18,7 @@ app.listen(port, async () => {
     }
 
     // make sure the db is ready
-    await initDB()
+    db = await initDB()
 
     console.log(`Db connected`)
     console.log(`Server routing on port http://localhost:${port}`)
