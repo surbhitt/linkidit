@@ -12,19 +12,27 @@ app.get('/', (req: Request, res: Response) => {
 
 // Basic validaton check for phone and email
 const isValidBody = (phoneNumber: string, email: string): boolean => {
+    if (!phoneNumber && !email) return false
+
     const phoneRegex = /^\d{10}$/;
-    const isPhoneValid = phoneRegex.test(phoneNumber);
+    const isPhoneValid = phoneNumber ? phoneRegex.test(phoneNumber) : true;
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const isEmailValid = emailRegex.test(email);
+    const isEmailValid = email ? emailRegex.test(email) : true;
 
     return isPhoneValid && isEmailValid;
 }
 
 app.post('/identify', async (req: Request, res: Response) => {
-    if (!req.body) res.status(400).json({ 'message': 'require atleast phoneNumber or email in req.body' })
+    if (!req.body) 
+        res.status(400).json({ 
+            'message': 'require atleast phoneNumber or email in req.body' 
+        })
     let { phoneNumber, email } = req.body
-    if (!isValidBody(phoneNumber, email)) return res.status(400).json({ 'message': 'invalid phoneNumber(10 digits required) or email(abc@def.com format required)' })
+    if (!isValidBody(phoneNumber, email)) 
+        return res.status(400).json({ 
+            'message': 'invalid phoneNumber(10 digits required) or email(abc@def.com format required)' 
+        })
 
     try {
         let consolidated = await identify(phoneNumber, email)

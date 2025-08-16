@@ -124,12 +124,13 @@ export const identify = async (phoneNumber: string, email: string) => {
     }
 
     // create final response
-    let rows: Order[] = await db.all(`SELECT id, phoneNumber, email  FROM orders WHERE linkedId = ${parentOrderId}`)
+    let rows: Order[] = await db.all(`SELECT id, phoneNumber, email  FROM orders WHERE linkedId = ${parentOrderId} OR id = ${parentOrderId}`)
     let secondaryOrderIdsSet: Set<number> = new Set(secondaryOrderIds)
     rows.forEach(order => {
         conEmails.add(order.email)
         conPhoneNumbers.add(order.phoneNumber)
-        secondaryOrderIdsSet.add(order.id)
+        if (order.id != parentOrderId) 
+            secondaryOrderIdsSet.add(order.id)
     })
 
     return {
