@@ -10,6 +10,7 @@ export const initDB = async () => {
         'filename': path.resolve(__dirname, '../../data/orders.db'),
         'driver': sqlite3.Database
     })
+    // TODO: index phoneNumber, email
     await db.exec(`
                   CREATE TABLE IF NOT EXISTS orders (
                         id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -90,10 +91,11 @@ export const identify = async (phoneNumber: string, email: string) => {
         db.all('UPDATE TABLE orders SET linkedId=?, linkPrecedence="secondary" WHERE id in ?', [parentOrderId, secondaryOrderIds])
     }
 
+    // TODO: search on the bases of the parent id 
     return {
         primaryContactId: parentOrderId,
-        emails: conEmails,
-        phoneNumbers: conPhoneNumbers,
+        emails: Array.from(conEmails),
+        phoneNumbers: Array.from(conPhoneNumbers),
         secondaryContactIds: secondaryOrderIds
     }
 }
