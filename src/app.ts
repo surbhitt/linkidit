@@ -24,13 +24,13 @@ const isValidBody = (phoneNumber: string, email: string): boolean => {
 app.post('/identify', async (req: Request, res: Response) => {
     if (!req.body) res.status(400).json({ 'message': 'require atleast phoneNumber or email in req.body' })
     let { phoneNumber, email } = req.body
-    if (!isValidBody(phoneNumber, email)) res.status(400).json({ 'message': 'invalid phoneNumber(10 digits required) or email(abc@def.com format required)' })
+    if (!isValidBody(phoneNumber, email)) return res.status(400).json({ 'message': 'invalid phoneNumber(10 digits required) or email(abc@def.com format required)' })
 
     try {
         let consolidated = await identify(phoneNumber, email)
-        res.status(200).json(consolidated)
+        return res.status(200).json(consolidated)
     } catch (err) {
-        res.status(500).json({ "message": err })
+        return res.status(500).json({ "message": err })
     }
 })
 
