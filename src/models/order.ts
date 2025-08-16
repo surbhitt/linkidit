@@ -1,4 +1,4 @@
-enum Precedence {
+export enum Precedence {
     primary,
     secondary
 }
