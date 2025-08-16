@@ -9,7 +9,7 @@ hosted@  [link](https://linkidit.onrender.com/identify)
 
 Submission to [link](https://bitespeed.notion.site/Bitespeed-Backend-Task-Identity-Reconciliation-1fb21bb2a930802eb896d4409460375c)
 
-**Endpoint**: `/identify`  <br>
+**Endpoint**: POST `/identify`  <br>
 **Expects**: 10 digit phoneNumber or valid email or both <br>
 **Response**: Json with the required fields <br>
 **Example**
