@@ -52,15 +52,21 @@ export const identify = async (phoneNumber: string, email: string) => {
     }
 
     let selectQ: string = createSelectQuery(phoneNumber, email);
-    // console.log(q)
     let orders: Order[] = await db.all(selectQ)
+
 
     let parentOrderId: number = -1
     let cntPrimaryOrder: number = 0
     let conEmails: Set<string> = new Set([]), conPhoneNumbers: Set<string> = new Set([])
     orders.forEach(order => {
-        if (parentOrderId == -1) parentOrderId = order.id
-        else parentOrderId = Math.min(parentOrderId, order.id)
+        if (parentOrderId == -1) {
+            if (order.linkedId) parentOrderId = order.linkedId
+            else parentOrderId = order.id
+        }
+        else {
+            if (order.linkedId) parentOrderId = Math.min(parentOrderId, order.linkedId)
+            else parentOrderId = Math.min(parentOrderId, order.id)
+        }
         if (order.linkPrecedence == Precedence.primary) cntPrimaryOrder++
         conEmails.add(order.email)
         conPhoneNumbers.add(order.phoneNumber)
@@ -70,32 +76,41 @@ export const identify = async (phoneNumber: string, email: string) => {
         if (order.id != parentOrderId) secondaryOrderIds.push(order.id)
     })
 
-    console.log('[LOG] following orders were found')
-    console.log(orders)
-    console.log('[LOG] parent order id = ', parentOrderId)
-
     if ((phoneNumber && !conPhoneNumbers.has(phoneNumber)) || (email && !conEmails.has(email))) {
         // couldnt find either the phone or email or both
         // create a new record
         const result = await db.run(createInsertQuery(parentOrderId), [phoneNumber, email])
         const newId = result.lastID;
+        if (!newId) {
+            // TODO: throw error insert failed
+            throw new Error('Database not initialized');
+        }
         conPhoneNumbers.add(phoneNumber)
         conEmails.add(email)
-        if (newId) secondaryOrderIds.push(newId)
-        console.log('[LOG] created the following records')
+        if (parentOrderId != -1) secondaryOrderIds.push(newId)
+        else parentOrderId = newId
     }
 
     if (cntPrimaryOrder > 1) {
         // multiple primary orders 
         // needs merging
-        db.all('UPDATE TABLE orders SET linkedId=?, linkPrecedence="secondary" WHERE id in ?', [parentOrderId, secondaryOrderIds])
+        await db.all(
+            `UPDATE orders SET linkedId = ${parentOrderId}, linkPrecedence = "secondary" WHERE id IN (${secondaryOrderIds.toString()}) OR linkedId IN (${secondaryOrderIds.toString()})`,
+        );
     }
 
-    // TODO: search on the bases of the parent id 
+    // get all the orders
+    let rows: Order[] = await db.all(`SELECT id, phoneNumber, email  FROM orders WHERE linkedId = ${parentOrderId}`)
+    let secondaryOrderIdsSet: Set<number> = new Set(secondaryOrderIds)
+    rows.forEach(order => {
+        conEmails.add(order.email)
+        conPhoneNumbers.add(order.phoneNumber)
+        secondaryOrderIdsSet.add(order.id)
+    })
     return {
         primaryContactId: parentOrderId,
         emails: Array.from(conEmails),
         phoneNumbers: Array.from(conPhoneNumbers),
-        secondaryContactIds: secondaryOrderIds
+        secondaryContactIds: Array.from(secondaryOrderIdsSet)
     }
 }
