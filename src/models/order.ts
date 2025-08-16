@@ -1,13 +1,13 @@
 export enum Precedence {
-    primary,
-    secondary
+    primary = "primary",
+    secondary = "secondary"
 }
 
 export interface Order {
     id: number,
     phoneNumber: string,
     email: string,
-    linkedId: number, 
+    linkedId: number,
     linkPrecedence: Precedence,
     createdAt: string,
     updatedAt: string,
