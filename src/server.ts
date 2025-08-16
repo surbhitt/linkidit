@@ -8,7 +8,6 @@ const dataDir = path.resolve(__dirname, '../data');
 
 let db: Awaited<ReturnType<typeof initDB>>
 
-// TODO: get port from config/env variables
 app.listen(port, async () => {
 
     // make data folder for the db
