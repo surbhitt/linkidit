@@ -2,6 +2,9 @@ LinkIdIt
 
 --- 
 
+> [!NOTE]  
+> The render endpoint might take a while to respond due to inactivity the instance is shutdown and booted on new requests
+
 express+ts+sqlite app <br>
 hosted@  [link](https://linkidit.onrender.com/identify)
 
